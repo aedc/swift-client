@@ -9,6 +9,10 @@ declare namespace SwiftClient {
     constructor(url: string, username: string, password: string);
   }
 
+  export class KeystoneV3Authenticator {
+    constructor(credentials: any);
+  }
+
   export class SwiftContainer {
     list(
       extra?: { [s: string]: string },
