@@ -44,15 +44,15 @@ class KeystoneV3Authenticator extends EventEmitter {
                         },
                         secret: credentials.applicationSecret,
                     }
-                },
-                scope: {
-                    project: {
-                        id: credentials.projectId,
-                        domain: {
-                            id: credentials.domainId
-                        }
-                    }
                 }
+                // scope: {
+                //     project: {
+                //         id: credentials.projectId,
+                //         domain: {
+                //             id: credentials.domainId
+                //         }
+                //     }
+                // }
             }
         };
 
