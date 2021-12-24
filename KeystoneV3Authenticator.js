@@ -35,9 +35,9 @@ class KeystoneV3Authenticator extends EventEmitter {
             auth: {
                 identity: {
                     methods: [
-                        'application_credentials'
+                        'application_credential'
                     ],
-                    application_credentials: {
+                    application_credential: {
                         id: credentials.applicationId,
                         domain: {
                             id: credentials.domainId || 'default'
