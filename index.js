@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const URL = require('url-parse');
 const requestp = require('request-promise');
@@ -11,7 +11,7 @@ const KeystoneV3Authenticator = require('./KeystoneV3Authenticator');
 class SwiftClient extends SwiftEntity {
     constructor(authenticator) {
         super('Container', null, authenticator);
-        
+
     }
 
     create(name, publicRead, meta, extra) {
@@ -39,7 +39,7 @@ class SwiftClient extends SwiftEntity {
      */
     async info() {
         const auth = await this.authenticator.authenticate();
-        const infoUrl = (new URL(auth.url)).origin + "/info";
+        const infoUrl = (new URL(auth.url)).origin + '/info';
         return requestp({
             method: 'GET',
             uri: infoUrl,

@@ -4,10 +4,29 @@ const EventEmitter = require('events');
 const requestp = require('request-promise');
 
 class KeystoneV3Authenticator extends EventEmitter {
-    constructor(credentials) {
+
+    static getAppCredentialInstance(credentials) {
+        return new KeystoneV3Authenticator(credentials, 'application_credential')
+    }
+
+    static getPasswordInstance(credentials) {
+        return new KeystoneV3Authenticator(credentials, 'password')
+    }
+
+    constructor(credentials, type) {
         super();
 
+        if (credentials === undefined || credentials === null || !Object.keys(credentials).length) {
+            throw new Error('credentials are required');
+        }
+
+        if (!type) {
+            throw new Error('type is required');
+        }
+
         this.credentials = credentials;
+        this.type = type;
+
         this.currentToken = null;
     }
 
@@ -31,30 +50,7 @@ class KeystoneV3Authenticator extends EventEmitter {
 
     async getToken() {
         const credentials = this.credentials;
-        const model = {
-            auth: {
-                identity: {
-                    methods: [
-                        'application_credential'
-                    ],
-                    application_credential: {
-                        id: credentials.applicationId,
-                        domain: {
-                            id: credentials.domainId || 'default'
-                        },
-                        secret: credentials.applicationSecret,
-                    }
-                }
-                // scope: {
-                //     project: {
-                //         id: credentials.projectId,
-                //         domain: {
-                //             id: credentials.domainId
-                //         }
-                //     }
-                // }
-            }
-        };
+        const model = this.getAuthModel();
 
         const response = await requestp({
             method: 'POST',
@@ -96,6 +92,60 @@ class KeystoneV3Authenticator extends EventEmitter {
 
         const validToken = this.currentToken;
         return {url: validToken.swiftUrl, token: validToken.token};
+    }
+
+    getAuthModel() {
+        let model = {};
+
+        if (this.type === 'application_credential') {
+            model = {
+                auth: {
+                    identity: {
+                        methods: [
+                            'application_credential'
+                        ],
+                        application_credential: {
+                            id: this.credentials.applicationId,
+                            domain: {
+                                id: this.credentials.domainId || 'default'
+                            },
+                            secret: this.credentials.applicationSecret,
+                        }
+                    }
+                }
+            }
+        } else if (this.type === 'password') {
+            model = {
+                auth: {
+                    identity: {
+                        methods: [
+                            'password'
+                        ],
+                        password: {
+                            user: {
+                                name: this.credentials.username,
+                                password: this.credentials.password,
+                                domain: {
+                                    id: this.credentials.domainId
+                                }
+                            }
+                        }
+                    },
+                    scope: {
+                        project: {
+                            id: this.credentials.projectId,
+                            domain: {
+                                id: this.credentials.domainId
+                            }
+                        }
+                    }
+                }
+            };
+        } else {
+            throw new Error("Invalid auth method supplied");
+        }
+
+        return model
     }
 }
 
