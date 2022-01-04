@@ -7,6 +7,7 @@ declare class SwiftClient {
 declare namespace SwiftClient {
     export class SwiftAuthenticator {
         constructor(url: string, username: string, password: string);
+        authenticate();
     }
 
     export class KeystoneV3Authenticator {
